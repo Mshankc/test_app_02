@@ -1,348 +1,266 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/theme/app_colors.dart';
-import '../core/theme/app_theme.dart';
-import '../models/address.dart';
-import '../providers/address_provider.dart';
-import 'map_address_screen.dart';
-import 'add_address_form_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import 'map_picker_screen.dart';
 
-class AddressListScreen extends ConsumerStatefulWidget {
+class AddressListScreen extends StatefulWidget {
   const AddressListScreen({super.key});
 
   @override
-  ConsumerState<AddressListScreen> createState() => _AddressListScreenState();
+  State<AddressListScreen> createState() => _AddressListScreenState();
 }
 
-class _AddressListScreenState extends ConsumerState<AddressListScreen> {
-  final _searchController = TextEditingController();
+class _AddressListScreenState extends State<AddressListScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  int selectedIndex = 0;
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  IconData _iconForLabel(AddressLabel label) {
-    switch (label) {
-      case AddressLabel.home:
-        return Icons.home_outlined;
-      case AddressLabel.work:
-        return Icons.school_outlined;
-      case AddressLabel.other:
-        return Icons.apartment_outlined;
-    }
-  }
+  final List<Map<String, dynamic>> addresses = [
+    {
+      'name': 'Jane Cooper',
+      'address': '6391 Elgin St. Celina, Delaware 10299',
+      'icon': 'assets/images/home-2.png',
+      'isSelected': true,
+    },
+    {
+      'name': 'John Doe',
+      'address': '1234 Maple Ave, Springfield, Illinois 62704',
+      'icon': 'assets/images/buildings.png',
+      'isSelected': false,
+    },
+    {
+      'name': 'Alice Smith',
+      'address': '5678 Oak St, Lincoln, Nebraska 68508',
+      'icon': 'assets/images/briefcase.png',
+      'isSelected': false,
+    },
+    {
+      'name': 'Bob Johnson',
+      'address': '9101 Pine Blvd, Miami, Florida 33101',
+      'icon': 'assets/images/home-2.png',
+      'isSelected': false,
+    },
+    {
+      'name': 'Emily Davis',
+      'address': '1122 Birch Rd, Seattle, Washington 98101',
+      'icon': Icons.business_outlined,
+      'isSelected': false,
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final addresses = ref.watch(addressListProvider);
-    final query = ref.watch(searchQueryProvider);
-    final filtered = query.isEmpty
-        ? addresses
-        : addresses
-              .where(
-                (a) =>
-                    a.name.toLowerCase().contains(query.toLowerCase()) ||
-                    a.fullAddress.toLowerCase().contains(query.toLowerCase()),
-              )
-              .toList();
-
     return Scaffold(
-      backgroundColor: AppColors.surface600,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          'Select Your Location',
-          style: AppTextStyles.titleLarge.copyWith(
-            color: AppColors.text500,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-              child: _SearchBar(
-                controller: _searchController,
-                onChanged: (v) =>
-                    ref.read(searchQueryProvider.notifier).state = v,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _ActionCard(
-                      icon: Icons.my_location,
-                      label: 'Use Current\nLocation',
-                      onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const MapAddressScreen(),
-                          ),
-                        );
-                      },
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        size: 20,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _ActionCard(
-                      icon: Icons.add,
-                      label: 'Add New\nAddress',
-                      onTap: () async {
-                        await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const MapAddressScreen(),
-                          ),
-                        );
-                      },
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Select Your Location',
+                      style: AppTextStyles.title,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Saved Addresses',
-                style: AppTextStyles.titleLarge.copyWith(
-                  color: AppColors.text500,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: filtered.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == filtered.length) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 24),
-                      child: InkWell(
-                        onTap: () async {
-                          await Navigator.of(context).push(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search an area or address',
+                      hintStyle: AppTextStyles.body.copyWith(
+                        color: AppColors.textPlaceholder,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: AppColors.textTertiary,
+                        size: 20,
+                      ),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                size: 18,
+                                color: AppColors.textTertiary,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                });
+                              },
+                            ),
+                          Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            width: 32,
+                            height: 32,
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Image.asset(
+                              'assets/images/microphone.png',
+                              width: 16,
+                              height: 16,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.my_location,
+                        label: 'Use Current\nLocation',
+                        onTap: () {
+                          Navigator.push(
+                            context,
                             MaterialPageRoute(
-                              builder: (_) => const MapAddressScreen(),
+                              builder: (_) => const MapPickerScreen(),
                             ),
                           );
                         },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.add,
-                              color: AppColors.green500,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Add new address',
-                              style: AppTextStyles.labelLarge.copyWith(
-                                color: AppColors.green500,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  final a = filtered[index];
-                  return Dismissible(
-                    key: Key(a.id),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.delete_outline,
-                        color: Colors.white,
-                        size: 28,
                       ),
                     ),
-                    confirmDismiss: (direction) async {
-                      return await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text('Delete Address'),
-                          content: Text(
-                            'Are you sure you want to delete "${a.name}"?',
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(false),
-                              child: const Text('Cancel'),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _ActionCard(
+                        icon: Icons.add,
+                        label: 'Add New\nAddress',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const MapPickerScreen(),
                             ),
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(true),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.red,
-                              ),
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    onDismissed: (direction) {
-                      ref
-                          .read(addressListProvider.notifier)
-                          .removeAddress(a.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${a.name} deleted'),
-                          duration: const Duration(seconds: 2),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      );
-                    },
-                    child: _AddressTile(
-                      address: a,
-                      icon: _iconForLabel(a.label),
-                      onTap: () => ref
-                          .read(addressListProvider.notifier)
-                          .selectAddress(a.id),
-                      onMenu: () => _showAddressMenu(context, a),
+                          );
+                        },
+                      ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAddressMenu(BuildContext context, SavedAddress address) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(
-                'Edit',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: AppColors.text500,
+                  ],
                 ),
               ),
-              onTap: () {
-                Navigator.pop(ctx);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => AddAddressFormScreen(editAddress: address),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Saved Addresses',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF676767),
                   ),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.red),
-              title: Text(
-                'Remove',
-                style: AppTextStyles.bodyLarge.copyWith(color: Colors.red),
-              ),
-              onTap: () {
-                ref
-                    .read(addressListProvider.notifier)
-                    .removeAddress(address.id);
-                Navigator.pop(ctx);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-
-  const _SearchBar({required this.controller, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      style: AppTextStyles.bodyLarge.copyWith(color: AppColors.text500),
-      decoration: InputDecoration(
-        hintText: 'Search an area or address',
-        hintStyle: AppTextStyles.bodyLarge.copyWith(color: AppColors.text300),
-        prefixIcon: const Icon(
-          Icons.search,
-          size: 20,
-          color: AppColors.text300,
-        ),
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close, size: 18, color: AppColors.text400),
-              onPressed: () {
-                controller.clear();
-                onChanged('');
-              },
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-            ),
-            Container(
-              width: 32,
-              height: 32,
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: AppColors.green500,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.mic_none_outlined,
-                  size: 18,
-                  color: Colors.white,
                 ),
-                onPressed: () {},
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
               ),
-            ),
-          ],
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+              const SizedBox(height: 12),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: addresses.length + 1,
+                  separatorBuilder: (context, index) {
+                    return const Divider(height: 1, color: AppColors.border);
+                  },
+                  itemBuilder: (context, index) {
+                    if (index == addresses.length) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MapPickerScreen(),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.add,
+                                size: 18,
+                                color: AppColors.primary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Add new address',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Color(0xFF676767),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    final address = addresses[index];
+                    return _AddressTile(
+                      name: address['name'],
+                      address: address['address'],
+                      icon: address['icon'],
+                      isSelected: address['isSelected'],
+                      onTap: () {
+                        setState(() {
+                          for (var addr in addresses) {
+                            addr['isSelected'] = false;
+                          }
+                          addresses[index]['isSelected'] = true;
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -362,39 +280,38 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      elevation: 0,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.green500.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: AppColors.green500, size: 24),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Color(0xFFEBF7EA),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  label,
-                  style: AppTextStyles.labelLarge.copyWith(
-                    color: AppColors.text500,
-                    fontWeight: FontWeight.w500,
-                    height: 1.2,
-                  ),
+              child: Icon(icon, color: AppColors.primary, size: 24),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontSize: 13,
+                  height: 1.2,
+                  color: Color(0xFF676767),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -402,107 +319,105 @@ class _ActionCard extends StatelessWidget {
 }
 
 class _AddressTile extends StatelessWidget {
-  final SavedAddress address;
-  final IconData icon;
+  final String name;
+  final String address;
+  final dynamic icon;
+  final bool isSelected;
   final VoidCallback onTap;
-  final VoidCallback onMenu;
 
   const _AddressTile({
+    required this.name,
     required this.address,
     required this.icon,
+    required this.isSelected,
     required this.onTap,
-    required this.onMenu,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Icon(icon, color: AppColors.text400, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8F8F8),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(6), // Reduced padding and size
+                child: icon is String
+                    ? Image.asset(
+                        icon,
+                        color: const Color(0xFF6B7280),
+                        width: 20,
+                        height: 20,
+                      )
+                    : Icon(icon, color: const Color(0xFF6B7280), size: 20),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              address.name,
-                              style: AppTextStyles.titleSmall.copyWith(
-                                color: AppColors.text500,
-                                fontWeight: FontWeight.w600,
-                                height: 1.25,
-                              ),
+                      Flexible(
+                        child: Text(
+                          name,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      if (isSelected) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEE2E2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Selected',
+                            style: AppTextStyles.caption.copyWith(
+                              color: const Color(0xFFEF4444),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          if (address.isSelected) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFE8E0),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                'Selected',
-                                style: AppTextStyles.tagMedium.copyWith(
-                                  color: const Color(0xFFD84315),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 9,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        address.fullAddress,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.text400,
-                          height: 1.5,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      ],
                     ],
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(
-                    Icons.more_vert,
-                    size: 20,
-                    color: AppColors.text400,
+                  const SizedBox(height: 4),
+                  Text(
+                    address,
+                    style: AppTextStyles.caption.copyWith(
+                      color: const Color(0xFF9CA3AF),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  onPressed: onMenu,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 28,
-                    minHeight: 28,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.more_vert,
+              color: AppColors.textTertiary,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
