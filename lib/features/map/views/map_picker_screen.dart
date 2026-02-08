@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
-import '../widgets/primary_button.dart';
-import 'address_form_screen.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/primary_button.dart';
+import '../../address/views/add_address_bottom_sheet.dart';
 
 class MapPickerScreen extends StatefulWidget {
   const MapPickerScreen({super.key});
@@ -53,30 +53,31 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Container(
+                      height: 48,
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.borderFigma,
+                          width: 1.5,
+                        ),
                       ),
                       child: Row(
                         children: [
-                          IconButton(
-                            icon: const Icon(
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const Icon(
                               Icons.arrow_back_ios,
-                              size: 20,
-                              color: AppColors.textPrimary,
+                              size: 18,
+                              color: Color(0xFF979797),
                             ),
-                            onPressed: () => Navigator.pop(context),
                           ),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: TextField(
                               controller: _searchController,
+                              textAlignVertical: TextAlignVertical.center,
                               style: AppTextStyles.body.copyWith(
                                 color: AppColors.textPrimary,
                               ),
@@ -86,39 +87,29 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                                   color: AppColors.textPlaceholder,
                                 ),
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 14,
-                                ),
+                                isCollapsed: true,
                               ),
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              size: 20,
-                              color: AppColors.textTertiary,
-                            ),
-                            onPressed: () {
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () {
                               setState(() {
                                 _searchController.clear();
                               });
                             },
+                            child: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: AppColors.textTertiary,
+                            ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 8),
-                            width: 32,
-                            height: 32,
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Image.asset(
-                              'assets/images/microphone.png',
-                              width: 16,
-                              height: 16,
-                              color: AppColors.primary,
-                            ),
+                          const SizedBox(width: 8),
+                          Image.asset(
+                            'assets/images/microphone.png',
+                            width: 20,
+                            height: 20,
+                            color: AppColors.primary,
                           ),
                         ],
                       ),
@@ -130,13 +121,15 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
+                  height: 32,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1C1C1C),
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(60),
+                    border: Border.all(
+                      color: const Color(0xFF1C1C1C),
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
@@ -147,19 +140,21 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset(
                         'assets/images/gps.png',
-                        width: 18,
-                        height: 18,
+                        width: 14,
+                        height: 14,
                         color: Colors.white,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       Text(
                         'Use Current Location',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: Colors.white,
-                          fontSize: 13,
+                          fontSize: 12,
                         ),
                       ),
                     ],
@@ -180,7 +175,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => const AddressFormScreen(),
+                          builder: (context) => const AddAddressBottomSheet(),
                         );
                       },
                     ),

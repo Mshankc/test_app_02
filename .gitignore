@@ -47,3 +47,4 @@ app.*.map.json
 # API Keys - DO NOT COMMIT
 ios/Runner/ApiKeys.swift
 android/app/src/main/res/values/api_keys.xml
+API_KEYS_SETUP.md

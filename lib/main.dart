@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'screens/address_list_screen.dart';
-import 'theme/app_colors.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'features/address/views/address_list_screen.dart';
+import 'core/theme/app_colors.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
         scaffoldBackgroundColor: AppColors.background,
         useMaterial3: true,
+        textTheme: GoogleFonts.interTextTheme(),
       ),
       home: const AddressListScreen(),
     );
