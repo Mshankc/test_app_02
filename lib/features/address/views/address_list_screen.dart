@@ -50,8 +50,9 @@ class _AddressListScreenState extends State<AddressListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F7F7),
       body: SafeArea(
+        bottom: false,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(

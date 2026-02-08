@@ -569,7 +569,9 @@ class _LabelChip extends StatelessWidget {
           color: isSelected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFE5E7EB),
+            color: isSelected
+                ? const Color(0xff78c670)
+                : const Color(0xFFE5E7EB),
             width: 2,
           ),
         ),
