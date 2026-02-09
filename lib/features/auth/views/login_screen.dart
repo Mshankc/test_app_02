@@ -7,6 +7,7 @@ import '../../../core/widgets/primary_button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/auth_state.dart';
 import 'otp_screen.dart';
+import '../../../core/utils/snackbar_utils.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -44,9 +45,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           );
         },
         error: (message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message), backgroundColor: AppColors.error),
-          );
+          SnackbarUtils.show(context, message);
         },
         orElse: () {},
       );
