@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'features/address/views/address_list_screen.dart';
+import 'features/auth/views/splash_screen.dart';
 import 'core/theme/app_colors.dart';
 
 void main() {
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         textTheme: GoogleFonts.interTextTheme(),
       ),
-      home: const AddressListScreen(),
+      home: const SplashScreen(),
     );
   }
 }

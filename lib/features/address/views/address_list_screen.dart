@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../map/views/map_picker_screen.dart';
@@ -73,7 +74,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: () => Navigator.pop(context),
+                            onTap: () {},
                             child: const Icon(
                               Icons.arrow_back_ios,
                               size: 20,
@@ -183,7 +184,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
                         children: [
                           Expanded(
                             child: _ActionCard(
-                              icon: Icons.my_location,
+                              icon: 'assets/images/Icon (1).svg',
                               label: 'Use Current\nLocation',
                               onTap: () {
                                 Navigator.push(
@@ -340,14 +341,19 @@ class _ActionCard extends StatelessWidget {
                 color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: icon is String
-                  ? Image.asset(
-                      icon,
-                      color: AppColors.primary,
-                      width: 24,
-                      height: 24,
-                    )
-                  : Icon(icon, color: AppColors.primary, size: 24),
+              child: Center(
+                child: icon is String && icon.endsWith('.svg')
+                    ? SvgPicture.asset(
+                        icon,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.primary,
+                          BlendMode.srcIn,
+                        ),
+                        width: 24,
+                        height: 24,
+                      )
+                    : Icon(icon, color: AppColors.primary, size: 24),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
