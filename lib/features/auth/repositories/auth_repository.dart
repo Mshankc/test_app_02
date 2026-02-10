@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
-  static const String _baseUrl = 'https://bv-api.bavoapp.in/api/v1';
+  static const String _baseUrl = 'https://api.bavoapp.in/api/v1';
   static const String _tokenKey = 'auth_token';
 
   Future<Map<String, dynamic>> signIn(String phone) async {
@@ -45,10 +45,30 @@ class AuthRepository {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        // Store token
-        if (data['token'] != null) {
-          await saveToken(data['token']);
+
+        // Extract token from nested structure: data -> tokens -> access -> token
+        String? token;
+        try {
+          token = data['data']?['tokens']?['access']?['token'];
+        } catch (e) {
+          print('🔴 Token Extraction Error: $e');
         }
+
+        if (token != null && token.isNotEmpty) {
+          print('🟢 Token found: ${token.substring(0, 10)}...');
+          await saveToken(token);
+
+          // Inject token back into root response to simplify provider logic if needed
+          // Or just return the data as is, but ensure provider knows where to look.
+          // For now, let's keep consistency with provider expectation or update provider.
+          // The provider expects `result['token']`. Let's add it to the returned map.
+          if (data is Map<String, dynamic>) {
+            data['token'] = token;
+          }
+        } else {
+          print('🔴 Token NOT found in response');
+        }
+
         return data;
       } else {
         final error = jsonDecode(response.body);

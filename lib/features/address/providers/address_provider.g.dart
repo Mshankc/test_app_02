@@ -24,7 +24,7 @@ final addressRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AddressRepositoryRef = AutoDisposeProviderRef<AddressRepository>;
-String _$addressNotifierHash() => r'f2020b341d90dc8f2ce5243729e9e6d633c59646';
+String _$addressNotifierHash() => r'39feef8bd0f5c3a555c0c07f0980fa3efb180320';
 
 /// See also [AddressNotifier].
 @ProviderFor(AddressNotifier)

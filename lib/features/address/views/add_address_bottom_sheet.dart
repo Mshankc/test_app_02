@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
+import '../models/address_model.dart';
+import '../providers/address_provider.dart';
+import '../../../core/utils/snackbar_utils.dart';
 
-class AddAddressBottomSheet extends StatefulWidget {
+class AddAddressBottomSheet extends ConsumerStatefulWidget {
   const AddAddressBottomSheet({super.key});
 
   @override
-  State<AddAddressBottomSheet> createState() => _AddAddressBottomSheetState();
+  ConsumerState<AddAddressBottomSheet> createState() =>
+      _AddAddressBottomSheetState();
 }
 
-class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
+class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
   final TextEditingController _houseController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _landmarkController = TextEditingController();
@@ -48,11 +54,14 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
                   ),
                   const Spacer(),
                   IconButton(
-                    icon: Image.asset(
-                      'assets/images/Search Icon.png',
+                    icon: SvgPicture.asset(
+                      'assets/images/search-normal.svg',
                       width: 22,
                       height: 22,
-                      color: const Color(0xFF9CA3AF),
+                      colorFilter: ColorFilter.mode(
+                        Color(0xFF9CA3AF),
+                        BlendMode.srcIn,
+                      ),
                     ),
                     onPressed: () {},
                   ),
@@ -379,11 +388,14 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
                                               6,
                                             ),
                                           ),
-                                          child: Image.asset(
-                                            'assets/images/Vector.png',
+                                          child: SvgPicture.asset(
+                                            'assets/images/Vector.svg',
                                             width: 18,
                                             height: 18,
-                                            color: const Color(0xFF494949),
+                                            colorFilter: ColorFilter.mode(
+                                              Color(0xFF494949),
+                                              BlendMode.srcIn,
+                                            ),
                                           ),
                                         ),
                                         border: OutlineInputBorder(
@@ -510,8 +522,85 @@ class _AddAddressBottomSheetState extends State<AddAddressBottomSheet> {
                                 width: double.infinity,
                                 height: 52,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
+                                  onPressed: () async {
+                                    final house = _houseController.text.trim();
+                                    final building = _buildingController.text
+                                        .trim();
+                                    final landmark = _landmarkController.text
+                                        .trim();
+                                    final name = _nameController.text.trim();
+                                    final phone = _phoneController.text.trim();
+
+                                    if (house.isEmpty ||
+                                        name.isEmpty ||
+                                        phone.isEmpty) {
+                                      SnackbarUtils.show(
+                                        context,
+                                        'Please fill in all required fields',
+                                      );
+                                      return;
+                                    }
+
+                                    final List<String> addressParts = [];
+                                    if (house.isNotEmpty) {
+                                      addressParts.add('$house.');
+                                    }
+                                    if (building.isNotEmpty) {
+                                      addressParts.add('$building,');
+                                    }
+                                    final fullAddress = addressParts.join(' ');
+
+                                    final newAddress = AddressModel(
+                                      id: '',
+                                      name: selectedLabel,
+                                      customerName: name,
+                                      address1: fullAddress,
+                                      address2: null,
+                                      phone: phone,
+                                      email: null, // Not collected in UI
+                                      city: null, // Not collected in UI
+                                      coordinates:
+                                          null, // Not collected in UI currently
+                                      pincode: null,
+                                      state: null,
+                                      country: null,
+                                      additionalDirection: landmark,
+                                      defaultAddress: false,
+                                      status: 'Active',
+                                      isSelected: false,
+                                    );
+
+                                    try {
+                                      print(
+                                        '🔵 Submitting address: $newAddress',
+                                      );
+                                      await ref
+                                          .read(
+                                            addressNotifierProvider.notifier,
+                                          )
+                                          .addAddress(newAddress);
+
+                                      if (!context.mounted) return;
+
+                                      // Double pop to close bottom sheet AND map picker
+                                      Navigator.pop(context);
+                                      if (context.mounted) {
+                                        Navigator.pop(context);
+                                      }
+
+                                      SnackbarUtils.show(
+                                        context,
+                                        'Address added successfully',
+                                        isError: false,
+                                      );
+                                    } catch (e) {
+                                      print('🔴 UI Error: $e');
+                                      if (!context.mounted) return;
+                                      SnackbarUtils.show(
+                                        context,
+                                        'Failed to add address: $e',
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,

@@ -14,7 +14,6 @@ AddressRepository addressRepository(AddressRepositoryRef ref) {
 class AddressNotifier extends _$AddressNotifier {
   @override
   AddressState build() {
-    loadAddresses();
     return const AddressState();
   }
 
@@ -26,6 +25,7 @@ class AddressNotifier extends _$AddressNotifier {
       final addresses = await repository.getAddresses();
       state = state.copyWith(addresses: addresses, isLoading: false);
     } catch (e) {
+      print('🔴 AddressNotifier Load Error: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -61,10 +61,14 @@ class AddressNotifier extends _$AddressNotifier {
       final repository = ref.read(addressRepositoryProvider);
       await repository.deleteAddress(id);
 
+      // Optimistic update
       final updatedAddresses = state.addresses
           .where((a) => a.id != id)
           .toList();
       state = state.copyWith(addresses: updatedAddresses);
+
+      // Verify with server
+      await loadAddresses();
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }

@@ -2,54 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../map/views/map_picker_screen.dart';
+import '../providers/address_provider.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/views/login_screen.dart';
 
-class AddressListScreen extends StatefulWidget {
+class AddressListScreen extends ConsumerStatefulWidget {
   const AddressListScreen({super.key});
 
   @override
-  State<AddressListScreen> createState() => _AddressListScreenState();
+  ConsumerState<AddressListScreen> createState() => _AddressListScreenState();
 }
 
-class _AddressListScreenState extends State<AddressListScreen> {
+class _AddressListScreenState extends ConsumerState<AddressListScreen> {
   final TextEditingController _searchController = TextEditingController();
   int selectedIndex = 0;
 
-  final List<Map<String, dynamic>> addresses = [
-    {
-      'name': 'Jane Cooper',
-      'address': '6391 Elgin St. Celina, Delaware 10299',
-      'icon': 'assets/images/home-2.png',
-      'isSelected': true,
-    },
-    {
-      'name': 'John Doe',
-      'address': '1234 Maple Ave, Springfield, Illinois 62704',
-      'icon': 'assets/images/buildings.png',
-      'isSelected': false,
-    },
-    {
-      'name': 'Alice Smith',
-      'address': '5678 Oak St, Lincoln, Nebraska 68508',
-      'icon': 'assets/images/briefcase.png',
-      'isSelected': false,
-    },
-    {
-      'name': 'Bob Johnson',
-      'address': '9101 Pine Blvd, Miami, Florida 33101',
-      'icon': 'assets/images/home-2.png',
-      'isSelected': false,
-    },
-    {
-      'name': 'Emily Davis',
-      'address': '1122 Birch Rd, Seattle, Washington 98101',
-      'icon': Icons.business_outlined,
-      'isSelected': false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(addressNotifierProvider.notifier).loadAddresses();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(addressNotifierProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${next.error}')));
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       body: SafeArea(
@@ -74,7 +61,18 @@ class _AddressListScreenState extends State<AddressListScreen> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () async {
+                              await ref.read(authProvider.notifier).logout();
+                              if (context.mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                  (route) => false,
+                                );
+                              }
+                            },
                             child: const Icon(
                               Icons.arrow_back_ios,
                               size: 20,
@@ -134,11 +132,15 @@ class _AddressListScreenState extends State<AddressListScreen> {
                                     color: Colors.transparent,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Image.asset(
-                                    'assets/images/System Icons.png',
+                                  child: SvgPicture.asset(
+                                    'assets/images/System Icons.svg',
                                     width: 16,
                                     height: 16,
-                                    color: AppColors.textTertiary,
+                                    fit: BoxFit.none,
+                                    colorFilter: ColorFilter.mode(
+                                      AppColors.textTertiary,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                 ),
                                 Container(
@@ -149,11 +151,15 @@ class _AddressListScreenState extends State<AddressListScreen> {
                                     color: Colors.transparent,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Image.asset(
-                                    'assets/images/microphone.png',
+                                  child: SvgPicture.asset(
+                                    'assets/images/microphone.svg',
+                                    fit: BoxFit.none,
+                                    colorFilter: ColorFilter.mode(
+                                      AppColors.primary,
+                                      BlendMode.srcIn,
+                                    ),
                                     width: 16,
                                     height: 16,
-                                    color: AppColors.primary,
                                   ),
                                 ),
                               ],
@@ -234,65 +240,134 @@ class _AddressListScreenState extends State<AddressListScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.borderFigma),
                       ),
-                      child: ListView.separated(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: addresses.length + 1,
-                        separatorBuilder: (context, index) {
-                          return const Divider(
-                            height: 1,
-                            color: AppColors.borderFigma,
-                          );
-                        },
-                        itemBuilder: (context, index) {
-                          if (index == addresses.length) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const MapPickerScreen(),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.add,
-                                      size: 18,
-                                      color: AppColors.primary,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Add new address',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: Color(0xff676767),
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
+                      child: Builder(
+                        builder: (context) {
+                          final state = ref.watch(addressNotifierProvider);
+
+                          if (state.isLoading) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(20),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
+                          if (state.error != null) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Text(
+                                  'Error: ${state.error}',
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             );
                           }
 
-                          final address = addresses[index];
-                          return _AddressTile(
-                            name: address['name'],
-                            address: address['address'],
-                            icon: address['icon'],
-                            isSelected: address['isSelected'],
-                            onTap: () {
-                              setState(() {
-                                for (var addr in addresses) {
-                                  addr['isSelected'] = false;
-                                }
-                                addresses[index]['isSelected'] = true;
-                              });
+                          final addresses = state.addresses;
+
+                          return ListView.separated(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: addresses.length + 1,
+                            separatorBuilder: (context, index) {
+                              return const Divider(
+                                height: 1,
+                                color: AppColors.borderFigma,
+                              );
+                            },
+                            itemBuilder: (context, index) {
+                              if (index == addresses.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const MapPickerScreen(),
+                                        ),
+                                      ).then((_) {
+                                        // Reload addresses when returning from adding/map screen
+                                        ref
+                                            .read(
+                                              addressNotifierProvider.notifier,
+                                            )
+                                            .loadAddresses();
+                                      });
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.add,
+                                          size: 18,
+                                          color: AppColors.primary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Add new address',
+                                          style: AppTextStyles.bodyMedium
+                                              .copyWith(
+                                                color: const Color(0xff676767),
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              final address = addresses[index];
+
+                              dynamic icon;
+                              final label = address.name.toLowerCase();
+                              if (label == 'home') {
+                                icon = 'assets/images/home-2.svg';
+                              } else if (label == 'work') {
+                                icon = 'assets/images/buildings.svg';
+                              } else {
+                                icon = 'assets/images/briefcase.svg';
+                              }
+
+                              return _AddressTile(
+                                name: address.customerName,
+                                address:
+                                    '${address.address1} ${address.additionalDirection ?? ''}',
+                                icon: icon,
+                                isSelected: address.isSelected,
+                                onTap: () {
+                                  if (address.id != null) {
+                                    ref
+                                        .read(addressNotifierProvider.notifier)
+                                        .selectAddress(address.id!);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Error: Address ID is missing',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                onDelete: () {
+                                  if (address.id != null) {
+                                    _showDeleteConfirmation(
+                                      context,
+                                      ref,
+                                      address.id!,
+                                    );
+                                  }
+                                },
+                              );
                             },
                           );
                         },
@@ -304,6 +379,110 @@ class _AddressListScreenState extends State<AddressListScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(
+    BuildContext context,
+    WidgetRef ref,
+    String addressId,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: const BoxDecoration(
+                  color: AppColors.errorLight,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                    size: 28,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Delete Address',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Are you sure you want to delete this address?',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: const BorderSide(color: Color(0xFFE5E7EB)),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: const Color(0xFF374151),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await ref
+                              .read(addressNotifierProvider.notifier)
+                              .deleteAddress(addressId);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Delete',
+                          style: AppTextStyles.labelLarge.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -379,6 +558,7 @@ class _AddressTile extends StatelessWidget {
   final dynamic icon;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onDelete;
 
   const _AddressTile({
     required this.name,
@@ -386,6 +566,7 @@ class _AddressTile extends StatelessWidget {
     required this.icon,
     required this.isSelected,
     required this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -404,14 +585,19 @@ class _AddressTile extends StatelessWidget {
                 color: const Color(0xFFF8F8F8),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(2),
+              child: Center(
                 child: icon is String
-                    ? Image.asset(
-                        icon,
-                        color: const Color(0xFF6B7280),
-                        width: 26,
-                        height: 26,
+                    ? SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: SvgPicture.asset(
+                          icon,
+                          fit: BoxFit.contain,
+                          colorFilter: ColorFilter.mode(
+                            Color(0xff969696),
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       )
                     : Icon(icon, color: const Color(0xFF6B7280), size: 20),
               ),
@@ -425,7 +611,9 @@ class _AddressTile extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          name,
+                          name.isNotEmpty
+                              ? '${name[0].toUpperCase()}${name.substring(1)}'
+                              : name,
                           style: AppTextStyles.labelMedium.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -472,10 +660,47 @@ class _AddressTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
-              Icons.more_vert,
-              color: AppColors.textTertiary,
-              size: 20,
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete') {
+                  onDelete?.call();
+                }
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              color: Colors.white,
+              elevation: 4,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    height: 40,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.delete_outline,
+                          color: AppColors.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Delete Address',
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ];
+              },
+              child: const Icon(
+                Icons.more_vert,
+                color: AppColors.textTertiary,
+                size: 20,
+              ),
             ),
           ],
         ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/primary_button.dart';
@@ -15,6 +18,55 @@ class MapPickerScreen extends StatefulWidget {
 class _MapPickerScreenState extends State<MapPickerScreen> {
   final TextEditingController _searchController = TextEditingController();
   static const LatLng _defaultCenter = LatLng(51.5074, -0.1278);
+  GoogleMapController? _mapController;
+  bool _isLoadingLocation = false;
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLoadingLocation = true);
+
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw 'Location services are disabled.';
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw 'Location permissions are denied';
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        throw 'Location permissions are permanently denied, we cannot request permissions.';
+      }
+
+      final position = await Geolocator.getCurrentPosition();
+      final latLng = LatLng(position.latitude, position.longitude);
+
+      _mapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: latLng, zoom: 16),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        SnackbarUtils.show(context, e.toString());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingLocation = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +81,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
+            onMapCreated: (controller) => _mapController = controller,
           ),
           Center(
             child: Image.asset(
@@ -105,11 +158,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Image.asset(
-                            'assets/images/microphone.png',
+                          SvgPicture.asset(
+                            'assets/images/microphone.svg',
                             width: 20,
                             height: 20,
-                            color: AppColors.primary,
+                            colorFilter: ColorFilter.mode(
+                              AppColors.primary,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ],
                       ),
@@ -121,13 +177,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
+                  width: 165,
                   height: 32,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1C1C1C),
                     borderRadius: BorderRadius.circular(60),
                     border: Border.all(
-                      color: const Color(0xFF1C1C1C),
+                      color: const Color(0xFF4a4a4a),
                       width: 2,
                     ),
                     boxShadow: [
@@ -138,26 +194,44 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       ),
                     ],
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/gps.png',
-                        width: 14,
-                        height: 14,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Use Current Location',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  child: InkWell(
+                    onTap: _getCurrentLocation,
+                    borderRadius: BorderRadius.circular(60),
+                    child: Center(
+                      child: _isLoadingLocation
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/images/Icon (1).svg',
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                  width: 14,
+                                  height: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Use Current Location',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
               ),

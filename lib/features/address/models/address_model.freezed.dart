@@ -21,18 +21,24 @@ AddressModel _$AddressModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$AddressModel {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get address => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError;
+  @JsonKey(name: '_id')
+  String? get id => throw _privateConstructorUsedError; // Maps _id from API to this field
+  String get name =>
+      throw _privateConstructorUsedError; // Label (Home, Work, Other)
+  String get customerName => throw _privateConstructorUsedError;
+  String get address1 => throw _privateConstructorUsedError;
+  String? get address2 => throw _privateConstructorUsedError;
+  String get phone => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
+  String? get city => throw _privateConstructorUsedError;
+  List<double>? get coordinates => throw _privateConstructorUsedError;
+  String? get pincode => throw _privateConstructorUsedError;
+  String? get state => throw _privateConstructorUsedError;
+  String? get country => throw _privateConstructorUsedError;
+  String? get additionalDirection => throw _privateConstructorUsedError;
+  bool get defaultAddress => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
   bool get isSelected => throw _privateConstructorUsedError;
-  String? get houseNo => throw _privateConstructorUsedError;
-  String? get building => throw _privateConstructorUsedError;
-  String? get landmark => throw _privateConstructorUsedError;
-  String? get receiverName => throw _privateConstructorUsedError;
-  String? get receiverPhone => throw _privateConstructorUsedError;
-  double? get latitude => throw _privateConstructorUsedError;
-  double? get longitude => throw _privateConstructorUsedError;
 
   /// Serializes this AddressModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,18 +58,22 @@ abstract class $AddressModelCopyWith<$Res> {
   ) = _$AddressModelCopyWithImpl<$Res, AddressModel>;
   @useResult
   $Res call({
-    String id,
+    @JsonKey(name: '_id') String? id,
     String name,
-    String address,
-    String type,
+    String customerName,
+    String address1,
+    String? address2,
+    String phone,
+    String? email,
+    String? city,
+    List<double>? coordinates,
+    String? pincode,
+    String? state,
+    String? country,
+    String? additionalDirection,
+    bool defaultAddress,
+    String status,
     bool isSelected,
-    String? houseNo,
-    String? building,
-    String? landmark,
-    String? receiverName,
-    String? receiverPhone,
-    double? latitude,
-    double? longitude,
   });
 }
 
@@ -82,69 +92,89 @@ class _$AddressModelCopyWithImpl<$Res, $Val extends AddressModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? name = null,
-    Object? address = null,
-    Object? type = null,
+    Object? customerName = null,
+    Object? address1 = null,
+    Object? address2 = freezed,
+    Object? phone = null,
+    Object? email = freezed,
+    Object? city = freezed,
+    Object? coordinates = freezed,
+    Object? pincode = freezed,
+    Object? state = freezed,
+    Object? country = freezed,
+    Object? additionalDirection = freezed,
+    Object? defaultAddress = null,
+    Object? status = null,
     Object? isSelected = null,
-    Object? houseNo = freezed,
-    Object? building = freezed,
-    Object? landmark = freezed,
-    Object? receiverName = freezed,
-    Object? receiverPhone = freezed,
-    Object? latitude = freezed,
-    Object? longitude = freezed,
   }) {
     return _then(
       _value.copyWith(
-            id: null == id
+            id: freezed == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
-            address: null == address
-                ? _value.address
-                : address // ignore: cast_nullable_to_non_nullable
+            customerName: null == customerName
+                ? _value.customerName
+                : customerName // ignore: cast_nullable_to_non_nullable
                       as String,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
+            address1: null == address1
+                ? _value.address1
+                : address1 // ignore: cast_nullable_to_non_nullable
+                      as String,
+            address2: freezed == address2
+                ? _value.address2
+                : address2 // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            phone: null == phone
+                ? _value.phone
+                : phone // ignore: cast_nullable_to_non_nullable
+                      as String,
+            email: freezed == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            city: freezed == city
+                ? _value.city
+                : city // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            coordinates: freezed == coordinates
+                ? _value.coordinates
+                : coordinates // ignore: cast_nullable_to_non_nullable
+                      as List<double>?,
+            pincode: freezed == pincode
+                ? _value.pincode
+                : pincode // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            state: freezed == state
+                ? _value.state
+                : state // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            country: freezed == country
+                ? _value.country
+                : country // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            additionalDirection: freezed == additionalDirection
+                ? _value.additionalDirection
+                : additionalDirection // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            defaultAddress: null == defaultAddress
+                ? _value.defaultAddress
+                : defaultAddress // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            status: null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
                       as String,
             isSelected: null == isSelected
                 ? _value.isSelected
                 : isSelected // ignore: cast_nullable_to_non_nullable
                       as bool,
-            houseNo: freezed == houseNo
-                ? _value.houseNo
-                : houseNo // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            building: freezed == building
-                ? _value.building
-                : building // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            landmark: freezed == landmark
-                ? _value.landmark
-                : landmark // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            receiverName: freezed == receiverName
-                ? _value.receiverName
-                : receiverName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            receiverPhone: freezed == receiverPhone
-                ? _value.receiverPhone
-                : receiverPhone // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            latitude: freezed == latitude
-                ? _value.latitude
-                : latitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
-            longitude: freezed == longitude
-                ? _value.longitude
-                : longitude // ignore: cast_nullable_to_non_nullable
-                      as double?,
           )
           as $Val,
     );
@@ -161,18 +191,22 @@ abstract class _$$AddressModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String id,
+    @JsonKey(name: '_id') String? id,
     String name,
-    String address,
-    String type,
+    String customerName,
+    String address1,
+    String? address2,
+    String phone,
+    String? email,
+    String? city,
+    List<double>? coordinates,
+    String? pincode,
+    String? state,
+    String? country,
+    String? additionalDirection,
+    bool defaultAddress,
+    String status,
     bool isSelected,
-    String? houseNo,
-    String? building,
-    String? landmark,
-    String? receiverName,
-    String? receiverPhone,
-    double? latitude,
-    double? longitude,
   });
 }
 
@@ -190,69 +224,89 @@ class __$$AddressModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? name = null,
-    Object? address = null,
-    Object? type = null,
+    Object? customerName = null,
+    Object? address1 = null,
+    Object? address2 = freezed,
+    Object? phone = null,
+    Object? email = freezed,
+    Object? city = freezed,
+    Object? coordinates = freezed,
+    Object? pincode = freezed,
+    Object? state = freezed,
+    Object? country = freezed,
+    Object? additionalDirection = freezed,
+    Object? defaultAddress = null,
+    Object? status = null,
     Object? isSelected = null,
-    Object? houseNo = freezed,
-    Object? building = freezed,
-    Object? landmark = freezed,
-    Object? receiverName = freezed,
-    Object? receiverPhone = freezed,
-    Object? latitude = freezed,
-    Object? longitude = freezed,
   }) {
     return _then(
       _$AddressModelImpl(
-        id: null == id
+        id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
-        address: null == address
-            ? _value.address
-            : address // ignore: cast_nullable_to_non_nullable
+        customerName: null == customerName
+            ? _value.customerName
+            : customerName // ignore: cast_nullable_to_non_nullable
                   as String,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
+        address1: null == address1
+            ? _value.address1
+            : address1 // ignore: cast_nullable_to_non_nullable
+                  as String,
+        address2: freezed == address2
+            ? _value.address2
+            : address2 // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        phone: null == phone
+            ? _value.phone
+            : phone // ignore: cast_nullable_to_non_nullable
+                  as String,
+        email: freezed == email
+            ? _value.email
+            : email // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        city: freezed == city
+            ? _value.city
+            : city // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        coordinates: freezed == coordinates
+            ? _value._coordinates
+            : coordinates // ignore: cast_nullable_to_non_nullable
+                  as List<double>?,
+        pincode: freezed == pincode
+            ? _value.pincode
+            : pincode // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        state: freezed == state
+            ? _value.state
+            : state // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        country: freezed == country
+            ? _value.country
+            : country // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        additionalDirection: freezed == additionalDirection
+            ? _value.additionalDirection
+            : additionalDirection // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        defaultAddress: null == defaultAddress
+            ? _value.defaultAddress
+            : defaultAddress // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        status: null == status
+            ? _value.status
+            : status // ignore: cast_nullable_to_non_nullable
                   as String,
         isSelected: null == isSelected
             ? _value.isSelected
             : isSelected // ignore: cast_nullable_to_non_nullable
                   as bool,
-        houseNo: freezed == houseNo
-            ? _value.houseNo
-            : houseNo // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        building: freezed == building
-            ? _value.building
-            : building // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        landmark: freezed == landmark
-            ? _value.landmark
-            : landmark // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        receiverName: freezed == receiverName
-            ? _value.receiverName
-            : receiverName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        receiverPhone: freezed == receiverPhone
-            ? _value.receiverPhone
-            : receiverPhone // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        latitude: freezed == latitude
-            ? _value.latitude
-            : latitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
-        longitude: freezed == longitude
-            ? _value.longitude
-            : longitude // ignore: cast_nullable_to_non_nullable
-                  as double?,
       ),
     );
   }
@@ -262,52 +316,77 @@ class __$$AddressModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$AddressModelImpl implements _AddressModel {
   const _$AddressModelImpl({
-    required this.id,
+    @JsonKey(name: '_id') this.id,
     required this.name,
-    required this.address,
-    required this.type,
+    required this.customerName,
+    required this.address1,
+    this.address2,
+    required this.phone,
+    this.email,
+    this.city,
+    final List<double>? coordinates,
+    this.pincode,
+    this.state,
+    this.country,
+    this.additionalDirection,
+    this.defaultAddress = false,
+    this.status = 'Active',
     this.isSelected = false,
-    this.houseNo,
-    this.building,
-    this.landmark,
-    this.receiverName,
-    this.receiverPhone,
-    this.latitude,
-    this.longitude,
-  });
+  }) : _coordinates = coordinates;
 
   factory _$AddressModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$AddressModelImplFromJson(json);
 
   @override
-  final String id;
+  @JsonKey(name: '_id')
+  final String? id;
+  // Maps _id from API to this field
   @override
   final String name;
+  // Label (Home, Work, Other)
   @override
-  final String address;
+  final String customerName;
   @override
-  final String type;
+  final String address1;
+  @override
+  final String? address2;
+  @override
+  final String phone;
+  @override
+  final String? email;
+  @override
+  final String? city;
+  final List<double>? _coordinates;
+  @override
+  List<double>? get coordinates {
+    final value = _coordinates;
+    if (value == null) return null;
+    if (_coordinates is EqualUnmodifiableListView) return _coordinates;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final String? pincode;
+  @override
+  final String? state;
+  @override
+  final String? country;
+  @override
+  final String? additionalDirection;
+  @override
+  @JsonKey()
+  final bool defaultAddress;
+  @override
+  @JsonKey()
+  final String status;
   @override
   @JsonKey()
   final bool isSelected;
-  @override
-  final String? houseNo;
-  @override
-  final String? building;
-  @override
-  final String? landmark;
-  @override
-  final String? receiverName;
-  @override
-  final String? receiverPhone;
-  @override
-  final double? latitude;
-  @override
-  final double? longitude;
 
   @override
   String toString() {
-    return 'AddressModel(id: $id, name: $name, address: $address, type: $type, isSelected: $isSelected, houseNo: $houseNo, building: $building, landmark: $landmark, receiverName: $receiverName, receiverPhone: $receiverPhone, latitude: $latitude, longitude: $longitude)';
+    return 'AddressModel(id: $id, name: $name, customerName: $customerName, address1: $address1, address2: $address2, phone: $phone, email: $email, city: $city, coordinates: $coordinates, pincode: $pincode, state: $state, country: $country, additionalDirection: $additionalDirection, defaultAddress: $defaultAddress, status: $status, isSelected: $isSelected)';
   }
 
   @override
@@ -317,23 +396,29 @@ class _$AddressModelImpl implements _AddressModel {
             other is _$AddressModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.address, address) || other.address == address) &&
-            (identical(other.type, type) || other.type == type) &&
+            (identical(other.customerName, customerName) ||
+                other.customerName == customerName) &&
+            (identical(other.address1, address1) ||
+                other.address1 == address1) &&
+            (identical(other.address2, address2) ||
+                other.address2 == address2) &&
+            (identical(other.phone, phone) || other.phone == phone) &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.city, city) || other.city == city) &&
+            const DeepCollectionEquality().equals(
+              other._coordinates,
+              _coordinates,
+            ) &&
+            (identical(other.pincode, pincode) || other.pincode == pincode) &&
+            (identical(other.state, state) || other.state == state) &&
+            (identical(other.country, country) || other.country == country) &&
+            (identical(other.additionalDirection, additionalDirection) ||
+                other.additionalDirection == additionalDirection) &&
+            (identical(other.defaultAddress, defaultAddress) ||
+                other.defaultAddress == defaultAddress) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.isSelected, isSelected) ||
-                other.isSelected == isSelected) &&
-            (identical(other.houseNo, houseNo) || other.houseNo == houseNo) &&
-            (identical(other.building, building) ||
-                other.building == building) &&
-            (identical(other.landmark, landmark) ||
-                other.landmark == landmark) &&
-            (identical(other.receiverName, receiverName) ||
-                other.receiverName == receiverName) &&
-            (identical(other.receiverPhone, receiverPhone) ||
-                other.receiverPhone == receiverPhone) &&
-            (identical(other.latitude, latitude) ||
-                other.latitude == latitude) &&
-            (identical(other.longitude, longitude) ||
-                other.longitude == longitude));
+                other.isSelected == isSelected));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -342,16 +427,20 @@ class _$AddressModelImpl implements _AddressModel {
     runtimeType,
     id,
     name,
-    address,
-    type,
+    customerName,
+    address1,
+    address2,
+    phone,
+    email,
+    city,
+    const DeepCollectionEquality().hash(_coordinates),
+    pincode,
+    state,
+    country,
+    additionalDirection,
+    defaultAddress,
+    status,
     isSelected,
-    houseNo,
-    building,
-    landmark,
-    receiverName,
-    receiverPhone,
-    latitude,
-    longitude,
   );
 
   /// Create a copy of AddressModel
@@ -370,47 +459,60 @@ class _$AddressModelImpl implements _AddressModel {
 
 abstract class _AddressModel implements AddressModel {
   const factory _AddressModel({
-    required final String id,
+    @JsonKey(name: '_id') final String? id,
     required final String name,
-    required final String address,
-    required final String type,
+    required final String customerName,
+    required final String address1,
+    final String? address2,
+    required final String phone,
+    final String? email,
+    final String? city,
+    final List<double>? coordinates,
+    final String? pincode,
+    final String? state,
+    final String? country,
+    final String? additionalDirection,
+    final bool defaultAddress,
+    final String status,
     final bool isSelected,
-    final String? houseNo,
-    final String? building,
-    final String? landmark,
-    final String? receiverName,
-    final String? receiverPhone,
-    final double? latitude,
-    final double? longitude,
   }) = _$AddressModelImpl;
 
   factory _AddressModel.fromJson(Map<String, dynamic> json) =
       _$AddressModelImpl.fromJson;
 
   @override
-  String get id;
+  @JsonKey(name: '_id')
+  String? get id; // Maps _id from API to this field
   @override
-  String get name;
+  String get name; // Label (Home, Work, Other)
   @override
-  String get address;
+  String get customerName;
   @override
-  String get type;
+  String get address1;
+  @override
+  String? get address2;
+  @override
+  String get phone;
+  @override
+  String? get email;
+  @override
+  String? get city;
+  @override
+  List<double>? get coordinates;
+  @override
+  String? get pincode;
+  @override
+  String? get state;
+  @override
+  String? get country;
+  @override
+  String? get additionalDirection;
+  @override
+  bool get defaultAddress;
+  @override
+  String get status;
   @override
   bool get isSelected;
-  @override
-  String? get houseNo;
-  @override
-  String? get building;
-  @override
-  String? get landmark;
-  @override
-  String? get receiverName;
-  @override
-  String? get receiverPhone;
-  @override
-  double? get latitude;
-  @override
-  double? get longitude;
 
   /// Create a copy of AddressModel
   /// with the given fields replaced by the non-null parameter values.
