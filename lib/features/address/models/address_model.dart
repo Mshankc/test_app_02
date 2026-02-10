@@ -6,9 +6,8 @@ part 'address_model.g.dart';
 @freezed
 class AddressModel with _$AddressModel {
   const factory AddressModel({
-    // ignore: invalid_annotation_target
-    @JsonKey(name: '_id') String? id, // Maps _id from API to this field
-    required String name, // Label (Home, Work, Other)
+    @JsonKey(name: '_id') String? id,
+    required String name,
     required String customerName,
     required String address1,
     String? address2,
@@ -22,8 +21,7 @@ class AddressModel with _$AddressModel {
     String? additionalDirection,
     @Default(false) bool defaultAddress,
     @Default('Active') String status,
-    @Default(false)
-    bool isSelected, // UI state, not in API necessarily but useful
+    bool isSelected,
   }) = _AddressModel;
 
   factory AddressModel.fromJson(Map<String, dynamic> json) =>

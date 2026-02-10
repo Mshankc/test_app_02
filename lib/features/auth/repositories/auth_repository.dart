@@ -46,7 +46,6 @@ class AuthRepository {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
 
-        // Extract token from nested structure: data -> tokens -> access -> token
         String? token;
         try {
           token = data['data']?['tokens']?['access']?['token'];
@@ -58,10 +57,6 @@ class AuthRepository {
           print('🟢 Token found: ${token.substring(0, 10)}...');
           await saveToken(token);
 
-          // Inject token back into root response to simplify provider logic if needed
-          // Or just return the data as is, but ensure provider knows where to look.
-          // For now, let's keep consistency with provider expectation or update provider.
-          // The provider expects `result['token']`. Let's add it to the returned map.
           if (data is Map<String, dynamic>) {
             data['token'] = token;
           }

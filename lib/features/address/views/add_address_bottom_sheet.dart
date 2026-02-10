@@ -557,10 +557,9 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
                                       address1: fullAddress,
                                       address2: null,
                                       phone: phone,
-                                      email: null, // Not collected in UI
-                                      city: null, // Not collected in UI
-                                      coordinates:
-                                          null, // Not collected in UI currently
+                                      email: null,
+                                      city: null,
+                                      coordinates: null,
                                       pincode: null,
                                       state: null,
                                       country: null,
@@ -582,7 +581,6 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
 
                                       if (!context.mounted) return;
 
-                                      // Double pop to close bottom sheet AND map picker
                                       Navigator.pop(context);
                                       if (context.mounted) {
                                         Navigator.pop(context);

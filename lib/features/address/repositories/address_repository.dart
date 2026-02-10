@@ -85,7 +85,6 @@ class AddressRepository {
   }
 
   Future<void> updateAddress(AddressModel address) async {
-    // TODO: Implement update API when available
     await Future.delayed(const Duration(milliseconds: 300));
   }
 
@@ -108,7 +107,6 @@ class AddressRepository {
         );
       }
 
-      // Check for soft failure in 200 OK response
       if (response.body.isNotEmpty) {
         try {
           final body = jsonDecode(response.body);
@@ -117,9 +115,7 @@ class AddressRepository {
               throw Exception(body['message'] ?? 'Server reported failure');
             }
           }
-        } catch (_) {
-          // Ignore decoding error if body is not JSON
-        }
+        } catch (_) {}
       }
     } catch (e) {
       print('🔴 DELETE Error: $e');

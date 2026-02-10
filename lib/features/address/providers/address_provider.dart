@@ -61,13 +61,11 @@ class AddressNotifier extends _$AddressNotifier {
       final repository = ref.read(addressRepositoryProvider);
       await repository.deleteAddress(id);
 
-      // Optimistic update
       final updatedAddresses = state.addresses
           .where((a) => a.id != id)
           .toList();
       state = state.copyWith(addresses: updatedAddresses);
 
-      // Verify with server
       await loadAddresses();
     } catch (e) {
       state = state.copyWith(error: e.toString());

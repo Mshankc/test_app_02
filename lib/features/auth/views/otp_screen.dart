@@ -97,7 +97,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(message), backgroundColor: AppColors.error),
           );
-          // Clear OTP fields on error
           for (var controller in _controllers) {
             controller.clear();
           }
@@ -133,7 +132,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 24),
-              // Title
               Text('Verify OTP', style: AppTextStyles.headlineMedium),
               const SizedBox(height: 8),
               RichText(
@@ -154,10 +152,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              // OTP Input - Using single TextField with visual boxes
               Stack(
                 children: [
-                  // Hidden TextField that captures input
                   Opacity(
                     opacity: 0,
                     child: SizedBox(
@@ -183,7 +179,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       ),
                     ),
                   ),
-                  // Visual OTP boxes
                   GestureDetector(
                     onTap: () => _focusNodes[0].requestFocus(),
                     child: Row(
@@ -225,7 +220,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ],
               ),
               const SizedBox(height: 32),
-              // Resend Section
               Center(
                 child: _canResend
                     ? GestureDetector(
@@ -258,7 +252,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       ),
               ),
               const Spacer(),
-              // Verify Button
               PrimaryButton(
                 text: 'Verify',
                 onPressed: _handleVerify,

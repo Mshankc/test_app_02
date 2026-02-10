@@ -293,7 +293,6 @@ class _AddressListScreenState extends ConsumerState<AddressListScreen> {
                                               const MapPickerScreen(),
                                         ),
                                       ).then((_) {
-                                        // Reload addresses when returning from adding/map screen
                                         ref
                                             .read(
                                               addressNotifierProvider.notifier,

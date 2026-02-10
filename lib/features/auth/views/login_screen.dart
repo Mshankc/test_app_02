@@ -68,7 +68,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               children: [
                 const SizedBox(height: 60),
                 const SizedBox(height: 48),
-                // Title
                 Text('Welcome', style: AppTextStyles.headlineMedium),
                 const SizedBox(height: 8),
                 Text(
@@ -78,10 +77,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Phone Input Label
                 Text('Phone Number', style: AppTextStyles.labelMedium),
                 const SizedBox(height: 8),
-                // Phone Input Field
                 Container(
                   height: 56,
                   decoration: BoxDecoration(
@@ -94,7 +91,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: Row(
                     children: [
-                      // Country Code
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Row(
@@ -111,13 +107,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ],
                         ),
                       ),
-                      // Divider
                       Container(
                         width: 1,
                         height: 24,
                         color: AppColors.borderFigma,
                       ),
-                      // Phone Input
                       Expanded(
                         child: TextFormField(
                           controller: _phoneController,
@@ -156,14 +150,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 const Spacer(),
-                // Get OTP Button
                 PrimaryButton(
                   text: 'Get OTP',
                   onPressed: _handleGetOtp,
                   isLoading: isLoading,
                 ),
                 const SizedBox(height: 16),
-                // Terms Text
                 Center(
                   child: RichText(
                     textAlign: TextAlign.center,
